@@ -36,19 +36,23 @@
     </nav>
 
     <div id="auth-section" class="hidden flex flex-col items-center justify-center min-h-screen p-6">
-        <div class="bg-slate-900/40 backdrop-blur-2xl p-12 rounded-[3rem] w-full max-w-md border border-white/5 shadow-2xl relative text-center">
-            <div class="mb-10">
-                <div class="w-20 h-20 bg-blue-600/10 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-blue-500/20">
-                    <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                </div>
-                <h2 class="text-3xl font-black text-white tracking-tight">EranMoney</h2>
-                <p class="text-slate-500 text-xs mt-2 italic text-blue-400">سجل دخولك وابدأ بجني الأرباح</p>
+        <div class="bg-slate-900/40 backdrop-blur-2xl p-10 rounded-[3rem] w-full max-w-md border border-white/5 shadow-2xl relative">
+            <div class="text-center mb-8">
+                <h2 id="auth-title" class="text-3xl font-black text-white">تسجيل الدخول</h2>
+                <p id="auth-desc" class="text-slate-500 text-xs mt-2">أهلاً بك مروجنا العزيز</p>
             </div>
-            
-            <button onclick="signInWithGoogle()" class="w-full bg-white text-black py-5 rounded-2xl font-bold transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl">
-                <svg class="w-6 h-6" viewBox="0 0 24 24"><path fill="#EA4335" d="M12.48 10.92v3.28h7.84c-.24 1.84-.92 3.32-2.12 4.4-1.28 1.28-3.08 2.08-5.72 2.08-4.48 0-8.08-3.6-8.08-8.08s3.6-8.08 8.08-8.08c2.44 0 4.28.96 5.64 2.24l2.32-2.32C18.44 2.4 15.8 1.08 12.48 1.08 6.44 1.08 1.56 5.96 1.56 12s4.88 10.92 10.92 10.92c3.28 0 5.76-1.08 7.68-3.08 1.96-1.96 2.56-4.76 2.56-7.04 0-.48-.04-.96-.12-1.4h-10.12z"/></svg>
-                <span class="text-base">الدخول عبر Google</span>
-            </button>
+
+            <div class="space-y-4">
+                <input type="text" id="reg-name" placeholder="الاسم الكامل" class="hidden w-full p-4 rounded-2xl bg-[#020617] border border-white/5 outline-none text-white text-sm text-right focus:border-blue-500/50 transition-all">
+                <input type="email" id="auth-email" placeholder="البريد الإلكتروني" class="w-full p-4 rounded-2xl bg-[#020617] border border-white/5 outline-none text-white text-sm text-right focus:border-blue-500/50 transition-all">
+                <input type="password" id="auth-pass" placeholder="كلمة المرور" class="w-full p-4 rounded-2xl bg-[#020617] border border-white/5 outline-none text-white text-sm text-right focus:border-blue-500/50 transition-all">
+                
+                <button id="main-btn" onclick="handleAuth()" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold shadow-xl transition-all active:scale-95">دخول</button>
+                
+                <div class="text-center mt-6">
+                    <button id="toggle-btn" onclick="toggleAuth()" class="text-xs text-blue-400 font-bold underline">ليس لديك حساب؟ سجل الآن</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -83,8 +87,8 @@
                 </select>
                 <input type="text" id="w-account" placeholder="رقم المحفظة" class="w-full p-4 rounded-2xl bg-[#020617] border border-white/5 outline-none text-white text-sm text-right">
                 <input type="number" id="w-amount" placeholder="المبلغ (7$ أدنى)" class="w-full p-4 rounded-2xl bg-[#020617] border border-white/5 outline-none text-white text-sm text-right">
-                <input type="text" id="w-contact" placeholder="تليجرام للتواصل" class="w-full p-4 rounded-2xl bg-[#020617] border border-white/5 outline-none text-white text-sm text-right">
-                <button onclick="confirmWithdraw()" class="w-full bg-emerald-600 py-4 rounded-2xl font-bold">تأكيد السحب</button>
+                <input type="text" id="w-contact" placeholder="يوزر تليجرام" class="w-full p-4 rounded-2xl bg-[#020617] border border-white/5 outline-none text-white text-sm text-right">
+                <button onclick="confirmWithdraw()" class="w-full bg-emerald-600 py-4 rounded-2xl font-bold shadow-xl">تأكيد الطلب</button>
                 <button onclick="openWithdraw()" class="w-full text-slate-500 text-sm">إلغاء</button>
             </div>
         </div>
@@ -98,7 +102,7 @@
     </div>
 
     <div id="toast-msg" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[11px] font-bold px-6 py-2 rounded-full shadow-2xl opacity-0 transition-all duration-300 pointer-events-none z-[999]">
-        تــم نسخ رابطك التسويقي بنجاح
+        تم نسخ الرابط بنجاح ✅
     </div>
 
     <script>
@@ -114,34 +118,42 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
         
+        let isLogin = true;
         const ADMIN_EMAILS = ["xxetali46@gmail.com", "xxetali47@gmail.com"];
         const DEFAULT_MARKETING_LINK = "https://hp.funroom.store/a/8nw6emt2";
         let currentWithdrawable = 0;
 
-        async function signInWithGoogle() {
+        function toggleAuth() {
+            isLogin = !isLogin;
+            document.getElementById('auth-title').innerText = isLogin ? 'تسجيل الدخول' : 'حساب جديد';
+            document.getElementById('auth-desc').innerText = isLogin ? 'أهلاً بك مروجنا العزيز' : 'انضم إلينا وابدأ الربح';
+            document.getElementById('main-btn').innerText = isLogin ? 'دخول' : 'إنشاء حساب';
+            document.getElementById('toggle-btn').innerText = isLogin ? 'ليس لديك حساب؟ سجل الآن' : 'لديك حساب؟ سجل دخولك';
+            document.getElementById('reg-name').classList.toggle('hidden', isLogin);
+        }
+
+        async function handleAuth() {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const name = document.getElementById('reg-name').value;
+
+            if (!email || !pass) return alert("يرجى ملء الحقول");
+
             try {
-                await auth.signInWithRedirect(googleProvider);
+                if (isLogin) {
+                    await auth.signInWithEmailAndPassword(email, pass);
+                } else {
+                    if (!name) return alert("يرجى كتابة الاسم");
+                    const res = await auth.createUserWithEmailAndPassword(email, pass);
+                    await db.ref('users/' + res.user.uid).set({
+                        username: name, email: email, totalBalance: 0, todayBalance: 0, withdrawableBalance: 0, clicks: 0, marketingLink: DEFAULT_MARKETING_LINK, joinDate: firebase.database.ServerValue.TIMESTAMP
+                    });
+                }
             } catch (e) { alert("خطأ: " + e.message); }
         }
 
-        // استلام نتيجة جوجل بعد العودة للموقع
-        auth.getRedirectResult().then(async (res) => {
-            if (res.user) {
-                const user = res.user;
-                const userRef = db.ref('users/' + user.uid);
-                const snap = await userRef.get();
-                if (!snap.exists()) {
-                    await userRef.set({
-                        username: user.displayName || "مروج جديد",
-                        email: user.email,
-                        totalBalance: 0, todayBalance: 0, withdrawableBalance: 0, clicks: 0, marketingLink: DEFAULT_MARKETING_LINK, joinDate: firebase.database.ServerValue.TIMESTAMP
-                    });
-                }
-            }
-        }).catch((e) => console.error(e));
-
+        // نفس منطق التحويل (Redirect)
         async function handleVisitor(id) {
             try {
                 const ipRes = await fetch('https://api.ipify.org?format=json');
@@ -203,7 +215,7 @@
                 document.getElementById('stat-withdrawable').innerText = `$${(d.withdrawableBalance || 0).toFixed(2)}`;
                 document.getElementById('stat-clicks').innerText = d.clicks || 0;
                 document.getElementById('user-welcome').innerText = `أهلاً، ${d.username}`;
-                document.getElementById('ref-link').value = "https://isitemoney.github.io/Sitelinkmoney/?id=" + user.uid;
+                document.getElementById('ref-link').value = window.location.origin + window.location.pathname + "?id=" + user.uid;
                 currentWithdrawable = d.withdrawableBalance || 0;
             });
         }
@@ -228,7 +240,7 @@
                         contact: document.getElementById('w-contact').value,
                         status: 'pending', timestamp: firebase.database.ServerValue.TIMESTAMP 
                     });
-                    alert("تم طلب السحب."); openWithdraw();
+                    alert("تم إرسال الطلب."); openWithdraw();
                 }
             });
         }
@@ -241,10 +253,10 @@
                     if(data[id].status === 'paid') continue;
                     list.innerHTML += `<div class="bg-[#020617] p-5 rounded-2xl border-r-4 border-amber-500 mb-3 text-right">
                         <div class="flex justify-between items-center">
-                            <button onclick="db.ref('withdrawals/${id}').update({status: 'paid'})" class="bg-emerald-600 px-4 py-1 rounded-xl text-[10px] font-bold">دفع</button>
+                            <button onclick="db.ref('withdrawals/${id}').update({status: 'paid'})" class="bg-emerald-600 px-4 py-1 rounded-xl text-[10px] font-bold">إتمام الدفع</button>
                             <p class="font-bold text-white">$${data[id].amount}</p>
                         </div>
-                        <p class="text-slate-500 text-[10px] mt-2">الحساب: ${data[id].account}</p>
+                        <p class="text-slate-500 text-[10px] mt-2 italic">الحساب: ${data[id].account}</p>
                     </div>`;
                 }
             });
