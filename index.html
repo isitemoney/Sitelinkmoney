@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EranMoney  </title>
+    <title>EranMoney </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -12,8 +12,6 @@
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap'); 
         body { font-family: 'Tajawal', sans-serif; overflow-x: hidden; } 
         .hidden { display: none !important; } 
-        #toast-msg.show { opacity: 1; transform: translate(-50%, -20px); }
-        /* أنيميشن نبض لصفحة الانتظار */
         .pulse-loader { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
     </style>
@@ -21,12 +19,12 @@
 <body class="bg-[#020617] text-slate-100 min-h-screen">
 
     <div id="redirect-screen" class="hidden flex flex-col items-center justify-center min-h-screen p-6 text-center bg-[#020617] z-[9999] fixed inset-0">
-        <div class="relative w-24 h-24 mb-8">
-            <div class="absolute inset-0 rounded-full border-4 border-blue-500/20"></div>
-            <div class="absolute inset-0 rounded-full border-4 border-t-blue-500 animate-spin"></div>
+        <div class="relative w-20 h-20 mb-8">
+            <div class="absolute inset-0 rounded-full border-2 border-blue-500/10"></div>
+            <div class="absolute inset-0 rounded-full border-2 border-t-blue-500 animate-spin"></div>
         </div>
-        <h2 class="text-2xl font-black text-white pulse-loader">جاري التحويل...</h2>
-        <p class="text-blue-400 text-[10px] mt-2 font-bold italic tracking-[0.3em] uppercase">EranMoney Secure Link</p>
+        <h2 class="text-xl font-black text-white pulse-loader">جاري تحويلك الآن...</h2>
+        <p class="text-blue-500/50 text-[9px] mt-3 font-bold tracking-[0.4em] uppercase">Secure Connection</p>
     </div>
 
     <nav id="nav" class="hidden bg-slate-900/40 backdrop-blur-md p-4 border-b border-white/5 flex justify-between items-center px-6 sticky top-0 z-50">
@@ -34,7 +32,7 @@
             <span class="text-lg font-bold text-blue-500 tracking-tighter">EranMoney</span>
             <span id="user-welcome" class="text-[10px] text-slate-500 italic font-bold">...</span>
         </div>
-        <button onclick="logout()" class="bg-red-500/10 text-red-500 px-4 py-1 rounded-xl border border-red-500/20 text-xs font-bold transition hover:bg-red-500/20">خروج</button>
+        <button onclick="logout()" class="bg-red-500/10 text-red-500 px-4 py-1 rounded-xl border border-red-500/20 text-xs font-bold">خروج</button>
     </nav>
 
     <div id="auth-section" class="hidden flex flex-col items-center justify-center min-h-screen p-6">
@@ -44,9 +42,10 @@
                     <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 </div>
                 <h2 class="text-3xl font-black text-white tracking-tight">EranMoney</h2>
-                <p class="text-slate-500 text-xs mt-2 italic text-blue-400">سجل دخولك عبر جوجل للبدء</p>
+                <p class="text-slate-500 text-xs mt-2 italic text-blue-400">سجل دخولك وابدأ بجني الأرباح</p>
             </div>
-            <button onclick="signInWithGoogle()" class="w-full bg-white text-black py-5 rounded-2xl font-bold transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl hover:bg-slate-100">
+            
+            <button onclick="signInWithGoogle()" class="w-full bg-white text-black py-5 rounded-2xl font-bold transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl">
                 <svg class="w-6 h-6" viewBox="0 0 24 24"><path fill="#EA4335" d="M12.48 10.92v3.28h7.84c-.24 1.84-.92 3.32-2.12 4.4-1.28 1.28-3.08 2.08-5.72 2.08-4.48 0-8.08-3.6-8.08-8.08s3.6-8.08 8.08-8.08c2.44 0 4.28.96 5.64 2.24l2.32-2.32C18.44 2.4 15.8 1.08 12.48 1.08 6.44 1.08 1.56 5.96 1.56 12s4.88 10.92 10.92 10.92c3.28 0 5.76-1.08 7.68-3.08 1.96-1.96 2.56-4.76 2.56-7.04 0-.48-.04-.96-.12-1.4h-10.12z"/></svg>
                 <span class="text-base">الدخول عبر Google</span>
             </button>
@@ -65,7 +64,7 @@
             <h4 class="font-bold mb-3 text-[10px] text-slate-400 uppercase tracking-widest">🔗 رابط التسويق الخاص بك</h4>
             <div class="flex bg-[#020617] rounded-2xl overflow-hidden border border-white/5 p-1">
                 <input type="text" id="ref-link" readonly class="bg-transparent p-3 flex-1 text-[11px] outline-none text-blue-300 text-left">
-                <button onclick="copyRef()" class="bg-blue-600 px-6 py-2 rounded-xl text-xs font-bold shadow-lg shadow-blue-600/20">نسخ</button>
+                <button onclick="copyRef()" class="bg-blue-600 px-6 py-2 rounded-xl text-xs font-bold transition shadow-lg shadow-blue-600/20">نسخ</button>
             </div>
         </div>
 
@@ -84,15 +83,10 @@
                 </select>
                 <input type="text" id="w-account" placeholder="رقم المحفظة" class="w-full p-4 rounded-2xl bg-[#020617] border border-white/5 outline-none text-white text-sm text-right">
                 <input type="number" id="w-amount" placeholder="المبلغ (7$ أدنى)" class="w-full p-4 rounded-2xl bg-[#020617] border border-white/5 outline-none text-white text-sm text-right">
-                <input type="text" id="w-contact" placeholder="يوزر تليجرام" class="w-full p-4 rounded-2xl bg-[#020617] border border-white/5 outline-none text-white text-sm text-right">
-                <button onclick="confirmWithdraw()" class="w-full bg-emerald-600 py-4 rounded-2xl font-bold shadow-xl">تأكيد الطلب</button>
+                <input type="text" id="w-contact" placeholder="تليجرام للتواصل" class="w-full p-4 rounded-2xl bg-[#020617] border border-white/5 outline-none text-white text-sm text-right">
+                <button onclick="confirmWithdraw()" class="w-full bg-emerald-600 py-4 rounded-2xl font-bold">تأكيد السحب</button>
                 <button onclick="openWithdraw()" class="w-full text-slate-500 text-sm">إلغاء</button>
             </div>
-        </div>
-
-        <div class="bg-slate-900/20 p-6 rounded-[2.5rem] border border-white/5">
-            <h4 class="text-sm font-bold mb-4 text-slate-500 italic pr-2 border-r-4 border-blue-600">📋 السجل</h4>
-            <div id="user-withdraw-history" class="space-y-3 text-[11px]"></div>
         </div>
 
         <div id="admin-area" class="hidden space-y-8 mt-10 border-t border-white/5 pt-10 text-right">
@@ -104,7 +98,7 @@
     </div>
 
     <div id="toast-msg" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[11px] font-bold px-6 py-2 rounded-full shadow-2xl opacity-0 transition-all duration-300 pointer-events-none z-[999]">
-        تــم نسخ رابطك التسويقي بنجاح 🫆 
+        تــم نسخ رابطك التسويقي بنجاح
     </div>
 
     <script>
@@ -126,14 +120,13 @@
         const DEFAULT_MARKETING_LINK = "https://hp.funroom.store/a/8nw6emt2";
         let currentWithdrawable = 0;
 
-        // تسجيل الدخول (استخدام Redirect لضمان العمل على الآيفون)
         async function signInWithGoogle() {
             try {
                 await auth.signInWithRedirect(googleProvider);
             } catch (e) { alert("خطأ: " + e.message); }
         }
 
-        // معالجة النتيجة بعد العودة من صفحة جوجل
+        // استلام نتيجة جوجل بعد العودة للموقع
         auth.getRedirectResult().then(async (res) => {
             if (res.user) {
                 const user = res.user;
@@ -147,7 +140,7 @@
                     });
                 }
             }
-        }).catch((e) => console.error("Redirect Error:", e));
+        }).catch((e) => console.error(e));
 
         async function handleVisitor(id) {
             try {
@@ -193,7 +186,6 @@
                     if (user) {
                         showUI('dashboard-section'); 
                         loadUserData(user); 
-                        loadUserWithdrawHistory(user.uid);
                         if (ADMIN_EMAILS.includes(user.email)) { 
                             document.getElementById('admin-area').classList.remove('hidden'); 
                             loadAdminData(); 
@@ -211,7 +203,6 @@
                 document.getElementById('stat-withdrawable').innerText = `$${(d.withdrawableBalance || 0).toFixed(2)}`;
                 document.getElementById('stat-clicks').innerText = d.clicks || 0;
                 document.getElementById('user-welcome').innerText = `أهلاً، ${d.username}`;
-                // الرابط الخاص بـ GitHub Pages
                 document.getElementById('ref-link').value = "https://isitemoney.github.io/Sitelinkmoney/?id=" + user.uid;
                 currentWithdrawable = d.withdrawableBalance || 0;
             });
@@ -237,19 +228,8 @@
                         contact: document.getElementById('w-contact').value,
                         status: 'pending', timestamp: firebase.database.ServerValue.TIMESTAMP 
                     });
-                    alert("تم إرسال الطلب."); openWithdraw();
+                    alert("تم طلب السحب."); openWithdraw();
                 }
-            });
-        }
-
-        function loadUserWithdrawHistory(uid) {
-            db.ref('withdrawals').orderByChild('uid').equalTo(uid).on('value', snap => {
-                const div = document.getElementById('user-withdraw-history');
-                const data = snap.val(); div.innerHTML = ""; if(!data) return;
-                Object.keys(data).reverse().forEach(k => {
-                    const i = data[k];
-                    div.innerHTML += `<div class="bg-[#020617] p-4 rounded-2xl border border-white/5 flex justify-between items-center mb-2"><div><p class="font-bold text-white">$${i.amount}</p><p class='text-slate-600'>${i.method}</p></div><div class="text-[9px] text-blue-400 font-bold">${i.status === 'paid' ? 'تم الدفع ✅' : 'قيد المراجعة'}</div></div>`;
-                });
             });
         }
 
@@ -261,10 +241,10 @@
                     if(data[id].status === 'paid') continue;
                     list.innerHTML += `<div class="bg-[#020617] p-5 rounded-2xl border-r-4 border-amber-500 mb-3 text-right">
                         <div class="flex justify-between items-center">
-                            <button onclick="db.ref('withdrawals/${id}').update({status: 'paid'})" class="bg-emerald-600 px-4 py-1 rounded-xl text-[10px] font-bold">إتمام الدفع</button>
+                            <button onclick="db.ref('withdrawals/${id}').update({status: 'paid'})" class="bg-emerald-600 px-4 py-1 rounded-xl text-[10px] font-bold">دفع</button>
                             <p class="font-bold text-white">$${data[id].amount}</p>
                         </div>
-                        <p class="text-slate-500 text-[10px] mt-2 italic">الحساب: ${data[id].account}</p>
+                        <p class="text-slate-500 text-[10px] mt-2">الحساب: ${data[id].account}</p>
                     </div>`;
                 }
             });
