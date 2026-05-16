@@ -20,13 +20,16 @@
         .level-silver { color: #c0c0c0; }
         .level-gold { color: #ffd700; }
         .level-diamond { color: #b9f2ff; }
+        #secret-indicator { position: fixed; bottom: 20px; left: 20px; z-index: 9999; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-box { background: #0f172a; border: 1px solid #1e293b; border-radius: 2rem; padding: 2rem; max-width: 500px; width: 100%; text-align: center; }
     </style>
 </head>
 <body>
 
 <nav id="nav" class="hidden glass-card sticky top-0 z-50 px-6 py-4 flex justify-between items-center border-b border-white/5">
     <div class="flex flex-col text-right">
-        <h1 class="text-xl font-black italic">DARING <span class="text-blue-500">MONEY</span></h1>
+        <h1 id="logo" class="text-xl font-black italic cursor-pointer select-none" onclick="handleSecretTap()">DARING <span class="text-blue-500">MONEY</span></h1>
         <p id="welcome-msg" class="text-[10px] text-slate-400 font-bold italic"></p>
     </div>
     <div class="flex gap-2">
@@ -35,6 +38,8 @@
         <button onclick="logout()" class="bg-red-500/20 text-red-400 px-4 py-2 rounded-xl text-xs font-black">خروج</button>
     </div>
 </nav>
+
+<div id="secret-indicator" class="hidden text-[10px] font-black text-amber-400 bg-slate-900/80 px-3 py-2 rounded-xl"></div>
 
 <div id="loading-screen" class="hidden fixed inset-0 z-[100] bg-[#050b1a] flex flex-col items-center justify-center text-center p-6">
     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-blue-500 mb-4"></div>
@@ -101,10 +106,22 @@
     </div>
 
     <div class="glass-card p-6 rounded-[2rem] border-r-4 border-blue-500 shadow-xl">
-        <h4 class="font-bold text-xs text-blue-400 mb-4 italic uppercase tracking-widest">🔗 رابطك التسويقي الحصري</h4>
-        <div class="flex gap-2 bg-slate-950 p-1 rounded-2xl border border-white/5">
-            <input id="ref-link" readonly class="w-full bg-transparent p-3 text-[10px] outline-none text-blue-300 font-bold">
-            <button onclick="copyReferralLink()" class="btn-primary px-6 rounded-xl font-black text-xs text-white">نسخ</button>
+        <h4 class="font-bold text-xs text-blue-400 mb-4 italic uppercase tracking-widest">🔗 روابط التسويق الخاصة بك</h4>
+        <div class="space-y-3">
+            <div>
+                <p class="text-[9px] text-slate-500 font-bold mb-1">الرابط الكامل:</p>
+                <div class="flex gap-2 bg-slate-950 p-1 rounded-2xl border border-white/5">
+                    <input id="ref-link" readonly class="w-full bg-transparent p-3 text-[10px] outline-none text-blue-300 font-bold">
+                    <button onclick="copyReferralLink()" class="btn-primary px-4 rounded-xl font-black text-xs text-white">نسخ</button>
+                </div>
+            </div>
+            <div>
+                <p class="text-[9px] text-slate-500 font-bold mb-1">رابطك القصير (للنشر):</p>
+                <div class="flex gap-2 bg-slate-950 p-1 rounded-2xl border border-white/5 border-emerald-500/30">
+                    <input id="short-link" readonly class="w-full bg-transparent p-3 text-[10px] outline-none text-emerald-300 font-bold">
+                    <button onclick="copyShortLink()" class="bg-emerald-600 px-4 rounded-xl font-black text-xs text-white">نسخ</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -121,6 +138,27 @@
             <input type="text" id="w-contact" placeholder="يوزر التليجرام الخاص بك" class="p-4 rounded-2xl text-xs text-right font-bold outline-none">
         </div>
         <button onclick="confirmWithdraw()" class="btn-primary w-full py-4 mt-4 rounded-2xl font-black text-white shadow-lg">تأكيد السحب</button>
+    </div>
+
+    <!-- 📅 السجل اليومي المفصل -->
+    <div class="glass-card p-6 rounded-[2rem] shadow-xl border border-cyan-500/30">
+        <h4 class="text-[10px] font-black mb-4 text-cyan-400 italic uppercase tracking-widest">📅 سجل الأيام المفصل</h4>
+        <div class="overflow-x-auto">
+            <table class="w-full text-[10px] text-right border-collapse">
+                <thead>
+                    <tr class="text-slate-400 border-b border-white/10">
+                        <th class="p-2">التاريخ</th>
+                        <th class="p-2">النقرات</th>
+                        <th class="p-2">الأرباح</th>
+                        <th class="p-2">أرباح الإحالة</th>
+                        <th class="p-2">سعر الضغطة</th>
+                    </tr>
+                </thead>
+                <tbody id="daily-log-body">
+                    <tr><td colspan="5" class="p-4 text-center text-slate-500">لا يوجد سجل بعد</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="glass-card p-6 rounded-[2rem] shadow-xl">
@@ -142,7 +180,6 @@
         </div>
     </div>
 
-    <!-- إحصائيات الأدمن -->
     <div class="glass-card p-6 rounded-[2rem] border border-purple-500/30">
         <h2 class="text-xl font-black text-purple-400 mb-4 italic uppercase">📊 إحصائيات متقدمة</h2>
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 text-center text-[10px]">
@@ -171,6 +208,17 @@
     </div>
 </div>
 
+<!-- نافذة تأكيد السحب -->
+<div id="withdraw-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+        <div class="text-5xl mb-4">⏳</div>
+        <h3 class="text-xl font-black text-amber-400 mb-2">تم استلام طلبك بنجاح!</h3>
+        <p class="text-sm text-slate-300 mb-4">يرجى التحلي بالصبر، سوف تتم معالجة طلبك في أقرب وقت ممكن.</p>
+        <p class="text-[10px] text-slate-500 mb-6">للاستفسار تواصل مع الدعم الفني على التليجرام</p>
+        <button onclick="closeModal()" class="btn-primary w-full py-3 rounded-2xl font-black">حسناً، فهمت</button>
+    </div>
+</div>
+
 <script>
 const firebaseConfig = {
     apiKey: "AIzaSyCnkJf-6sAeRJpm34yXLmklLwSxM-GJvUc",
@@ -188,22 +236,57 @@ const auth = firebase.auth();
 
 const ADMIN_EMAILS = ["xxetali46@gmail.com", "xxetali47@gmail.com"];
 
+// ========== نظام الضغطات السرية ==========
+let secretTapCount = 0;
+let secretTapTimer = null;
+
+function handleSecretTap() {
+    secretTapCount++;
+    const indicator = document.getElementById('secret-indicator');
+    indicator.classList.remove('hidden');
+    indicator.innerText = `🔒 ${secretTapCount}/7`;
+    
+    clearTimeout(secretTapTimer);
+    secretTapTimer = setTimeout(() => {
+        secretTapCount = 0;
+        indicator.classList.add('hidden');
+    }, 3000);
+    
+    if (secretTapCount === 7) {
+        secretTapCount = 0;
+        indicator.classList.add('hidden');
+        
+        const user = auth.currentUser;
+        if (user && ADMIN_EMAILS.includes(user.email)) {
+            const adminPanel = document.getElementById('admin-panel');
+            adminPanel.classList.toggle('hidden');
+            if (!adminPanel.classList.contains('hidden')) {
+                loadAdminPanel();
+                showNotification('🔓 تم فتح لوحة التحكم السرية', 'purple');
+            } else {
+                showNotification('🔒 تم إغلاق لوحة التحكم', 'blue');
+            }
+        } else {
+            showNotification('⛔ ليس لديك صلاحية الوصول', 'blue');
+        }
+    }
+}
+
 // نظام المستويات
 const LEVELS = {
     bronze: { min: 0, commission: 0.02, name: "برونزي", color: "level-bronze", next: 50 },
-    silver: { min: 100, commission: 0.03, name: "فضي", color: "level-silver", next: 200 },
-    gold: { min: 300, commission: 0.05, name: "ذهبي", color: "level-gold", next: 500 },
-    diamond: { min: 700, commission: 0.07, name: "الماسي", color: "level-diamond", next: Infinity }
+    silver: { min: 50, commission: 0.03, name: "فضي", color: "level-silver", next: 200 },
+    gold: { min: 200, commission: 0.05, name: "ذهبي", color: "level-gold", next: 500 },
+    diamond: { min: 500, commission: 0.07, name: "الماسي", color: "level-diamond", next: Infinity }
 };
 
 function getUserLevel(clicks) {
-    if (clicks >= 700) return LEVELS.diamond;
-    if (clicks >= 300) return LEVELS.gold;
-    if (clicks >= 100) return LEVELS.silver;
+    if (clicks >= 500) return LEVELS.diamond;
+    if (clicks >= 200) return LEVELS.gold;
+    if (clicks >= 50) return LEVELS.silver;
     return LEVELS.bronze;
 }
 
-// جلب الرابط العالمي
 let GLOBAL_REDIRECT_LINK = "https://hp.funroom.store/a/8nw6emt2";
 db.ref('settings/redirectLink').on('value', snap => {
     if (snap.val()) {
@@ -244,11 +327,20 @@ function checkAndRedirect() {
                     if (!ipAlreadyClicked) {
                         db.ref('clicks_log/' + refId).push(ip);
                         
-                        // جلب مستوى المسوّق لتحديد العمولة
                         db.ref('users/' + refId).once('value').then(userSnap => {
                             const userData = userSnap.val() || {};
                             const level = getUserLevel(userData.clicks || 0);
                             const commission = level.commission;
+                            
+                            // تسجيل السجل اليومي
+                            const today = new Date().toISOString().split('T')[0];
+                            db.ref('daily_log/' + refId + '/' + today).transaction(log => {
+                                if (!log) log = { date: today, clicks: 0, earnings: 0, refEarnings: 0, clickRate: commission };
+                                log.clicks = (log.clicks || 0) + 1;
+                                log.earnings = Number(((log.earnings || 0) + commission).toFixed(3));
+                                log.clickRate = commission;
+                                return log;
+                            });
                             
                             db.ref('users/' + refId).transaction(d => {
                                 if (d) {
@@ -259,13 +351,20 @@ function checkAndRedirect() {
                                 return d;
                             });
                             
-                            // أرباح الإحالة متعددة المستويات (10% للمُحيل)
                             if (userData.referredBy) {
                                 db.ref('users/' + userData.referredBy).transaction(refD => {
                                     if (refD) {
-                                        refD.refEarnings = Number(((refD.refEarnings || 0) + (commission * 0.1)).toFixed(3));
-                                        refD.todayBalance = Number(((refD.todayBalance || 0) + (commission * 0.1)).toFixed(2));
-                                        refD.totalBalance = Number(((refD.totalBalance || 0) + (commission * 0.1)).toFixed(2));
+                                        const refCommission = Number((commission * 0.1).toFixed(3));
+                                        refD.refEarnings = Number(((refD.refEarnings || 0) + refCommission).toFixed(3));
+                                        refD.todayBalance = Number(((refD.todayBalance || 0) + refCommission).toFixed(2));
+                                        refD.totalBalance = Number(((refD.totalBalance || 0) + refCommission).toFixed(2));
+                                        
+                                        // تسجيل أرباح الإحالة بالسجل اليومي للمُحيل
+                                        db.ref('daily_log/' + userData.referredBy + '/' + today).transaction(log => {
+                                            if (!log) log = { date: today, clicks: 0, earnings: 0, refEarnings: 0, clickRate: 0 };
+                                            log.refEarnings = Number(((log.refEarnings || 0) + refCommission).toFixed(3));
+                                            return log;
+                                        });
                                     }
                                     return refD;
                                 });
@@ -293,7 +392,7 @@ function claimDailyBonus() {
             return;
         }
         
-        const bonus = Math.floor(Math.random() * 10) + 1; // 1 إلى 10 سنت
+        const bonus = Math.floor(Math.random() * 10) + 1;
         const bonusAmount = bonus / 100;
         
         db.ref('users/' + user.uid).update({
@@ -316,7 +415,6 @@ function showThemes() {
     showNotification('تم تغيير الثيم ✅', 'purple');
 }
 
-// تحميل الثيم المحفوظ
 const savedTheme = localStorage.getItem('theme');
 if (savedTheme) document.body.style.background = savedTheme;
 
@@ -327,6 +425,10 @@ function showNotification(msg, type = "blue") {
     div.innerText = msg;
     document.body.appendChild(div);
     setTimeout(() => div.remove(), 4000);
+}
+
+function closeModal() {
+    document.getElementById('withdraw-modal').classList.add('hidden');
 }
 
 function checkDailyReset(uid, data) {
@@ -344,6 +446,32 @@ function checkDailyReset(uid, data) {
             lastResetDay: todayStr
         });
     }
+}
+
+// 📅 تحميل السجل اليومي
+function loadDailyLog(uid) {
+    db.ref('daily_log/' + uid).on('value', snap => {
+        const data = snap.val();
+        const tbody = document.getElementById('daily-log-body');
+        if (!data) {
+            tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">لا يوجد سجل بعد</td></tr>';
+            return;
+        }
+        
+        const days = Object.keys(data).sort().reverse();
+        tbody.innerHTML = days.map(day => {
+            const log = data[day];
+            return `
+                <tr class="border-b border-white/5 hover:bg-white/5">
+                    <td class="p-2 font-bold text-white">${day}</td>
+                    <td class="p-2 text-purple-400 font-black">${log.clicks || 0}</td>
+                    <td class="p-2 text-emerald-400 font-black">$${(log.earnings || 0).toFixed(3)}</td>
+                    <td class="p-2 text-amber-400 font-black">$${(log.refEarnings || 0).toFixed(3)}</td>
+                    <td class="p-2 text-blue-400 font-black">${(log.clickRate || 0).toFixed(2)}¢</td>
+                </tr>
+            `;
+        }).join('');
+    });
 }
 
 auth.onAuthStateChanged(u => {
@@ -368,9 +496,12 @@ auth.onAuthStateChanged(u => {
             document.getElementById('stat-clicks').innerText = d.clicks || 0;
             document.getElementById('stat-referrals').innerText = d.referralCount || 0;
             document.getElementById('stat-ref-earnings').innerText = `$${(d.refEarnings||0).toFixed(2)}`;
-            document.getElementById('ref-link').value = window.location.origin + window.location.pathname + "?ref=" + u.uid;
             
-            // إظهار أو إخفاء زر المكافأة
+            // الرابط الكامل
+            document.getElementById('ref-link').value = window.location.origin + window.location.pathname + "?ref=" + u.uid;
+            // الرابط القصير
+            document.getElementById('short-link').value = window.location.origin + window.location.pathname + "?r=" + (d.username || u.uid.substring(0, 8));
+            
             const today = new Date().toDateString();
             if (d.lastBonusDay === today) {
                 document.getElementById('bonus-btn').classList.add('hidden');
@@ -380,15 +511,12 @@ auth.onAuthStateChanged(u => {
         });
         
         renderHistory(u.uid);
-        
-        if (ADMIN_EMAILS.includes(u.email)) {
-            document.getElementById('admin-panel').classList.remove('hidden');
-            loadAdminPanel();
-        }
+        loadDailyLog(u.uid);
     } else {
         document.getElementById('auth-section').classList.remove('hidden');
         document.getElementById('dashboard-section').classList.add('hidden');
         document.getElementById('nav').classList.add('hidden');
+        document.getElementById('admin-panel').classList.add('hidden');
     }
 });
 
@@ -421,7 +549,6 @@ async function handleAuth() {
             
             await db.ref('users/' + r.user.uid).set(userData);
             
-            // إذا سجل عن طريق مُحيل، نضيفه لقائمة المُحالين
             if (ref) {
                 db.ref('users/' + ref).transaction(d => {
                     if (d) {
@@ -479,14 +606,15 @@ function confirmWithdraw() {
             status: "pending",
             timestamp: Date.now()
         }).then(() => {
-            showNotification("تم طلب السحب بنجاح! ✅", "green");
+            // إظهار نافذة التأكيد
+            document.getElementById('withdraw-modal').classList.remove('hidden');
             document.getElementById('w-amount').value = "";
+            document.getElementById('w-account').value = "";
         });
     });
 }
 
 function loadAdminPanel() {
-    // إحصائيات متقدمة
     db.ref('users').on('value', snap => {
         const users = snap.val() || {};
         let totalClicks = 0;
@@ -513,7 +641,6 @@ function loadAdminPanel() {
         });
     });
     
-    // طلبات السحب
     db.ref('withdrawals').on('value', snap => {
         const container = document.getElementById('admin-withdrawals');
         container.innerHTML = "";
@@ -543,11 +670,20 @@ function copyReferralLink() {
     const copyText = document.getElementById("ref-link");
     copyText.select();
     document.execCommand("copy");
-    showNotification("تم نسخ الرابط ✅", "green");
+    showNotification("تم نسخ الرابط الكامل ✅", "green");
+}
+
+function copyShortLink() {
+    const copyText = document.getElementById("short-link");
+    copyText.select();
+    document.execCommand("copy");
+    showNotification("تم نسخ الرابط القصير ✅", "green");
 }
 
 function logout() {
     auth.signOut();
+    document.getElementById('admin-panel').classList.add('hidden');
+    secretTapCount = 0;
 }
 
 checkAndRedirect();
